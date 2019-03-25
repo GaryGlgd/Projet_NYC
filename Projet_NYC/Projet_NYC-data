@@ -1,0 +1,121 @@
+SET AUTOCOMMIT = 0;
+-- Autocommit permet de faire des rollbacks quand il y a des erreurs, lors des transactions
+
+START TRANSACTION;
+
+-- Connection à la DB.
+USE projet_nyc ;
+
+-- Chargement de la table flights depuis un fichier csv.
+
+TRUNCATE TABLE flights ;
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/flights2.csv' 
+INTO TABLE flights
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES 
+(year, month, day, dep_time, sched_dep_time, dep_delay, arr_time, sched_arr_time, arr_delay, carrier, flight, tailnum, origin, dest, air_time, distance, hour, minute, time_hour);
+
+TRUNCATE TABLE airports ;
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/airports2.csv' 
+INTO TABLE airports
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+TRUNCATE TABLE planes ;
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/planes2.csv' 
+INTO TABLE planes
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+TRUNCATE TABLE airlines ;
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/airlines2.csv' 
+INTO TABLE airlines
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+TRUNCATE TABLE weather ;
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/weather2.csv' 
+INTO TABLE weather
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+
+
+-- Ajouter des enregistrements manquants dans la table parent
+
+
+INSERT INTO airports (faa, name)
+VALUES ('BQN', 'Rafael Hernandez Airport'),
+	('SJU', 'San Juan Airport'),
+	('STT', 'Cyril E. King Airport'),
+	('PSE', 'Mercedita Airport');
+
+
+-- Ajouter les lignes manquantes dans les tables mères pour ne pas être  bloqué avec les foreign key.
+
+
+INSERT INTO planes (tailnum)
+SELECT distinct tailnum FROM flights
+WHERE tailnum NOT IN (SELECT tailnum FROM planes);
+
+INSERT INTO weather (year, month, day, hour, origin)
+SELECT distinct year, month, day, hour, origin FROM flights
+WHERE (year, month, day, hour, origin) 
+NOT IN (SELECT distinct year, month, day, hour, origin FROM weather);
+
+
+
+-- On va éclater la planes en table type_planes, manufacturer_planes et model_planes
+
+
+
+
+
+
+
+-- Créer une clé primaire plus simple que de faire un clé composite trop longue qu'une clé composite
+
+
+ALTER TABLE flights 
+ADD COLUMN flights_id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY; 
+
+
+-- On ajoute les foreign key
+
+ALTER TABLE flights
+ADD CONSTRAINT fk_faa_origin FOREIGN KEY (origin) REFERENCES airports(faa);
+
+ALTER TABLE flights
+ADD CONSTRAINT fk_faa_dest FOREIGN KEY (dest) REFERENCES airports(faa);
+
+ALTER TABLE flights		
+ADD CONSTRAINT fk_carrier FOREIGN KEY (carrier) REFERENCES airlines(carrier);
+	
+ALTER TABLE flights
+ADD CONSTRAINT fk_tailnum FOREIGN KEY (tailnum) REFERENCES planes(tailnum);
+	
+ALTER TABLE flights
+ADD CONSTRAINT fk_weather FOREIGN KEY (year, month, day, hour, origin) REFERENCES weather(year, month, day, hour, origin);
+
+ALTER TABLE weather
+ADD CONSTRAINT fk_faa_weather FOREIGN KEY (origin) REFERENCES airports(faa);
+
+
+SET AUTOCOMMIT = 1;
+
+
+-- Fin du schema
+
+
+
+

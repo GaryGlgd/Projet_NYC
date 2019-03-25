@@ -1,0 +1,140 @@
+SET AUTOCOMMIT = 0; 
+
+DROP SCHEMA IF EXISTS projet_nyc;
+
+CREATE DATABASE projet_nyc CHARACTER SET 'utf8';
+USE projet_nyc;
+
+
+-- Table structure for table flights
+
+DROP TABLE IF EXISTS flights ;
+CREATE TABLE flights (
+		year YEAR NOT NULL,
+		month CHAR (2) NOT NULL,
+		day CHAR (2) NOT NULL,
+		dep_time SMALLINT UNSIGNED NULL,
+		sched_dep_time SMALLINT UNSIGNED NOT NULL,
+		dep_delay SMALLINT NULL,
+		arr_time SMALLINT UNSIGNED NULL,
+		sched_arr_time SMALLINT UNSIGNED NOT NULL,
+		arr_delay SMALLINT NULL,
+		carrier CHAR(2),
+		flight SMALLINT NOT NULL,
+		tailnum CHAR(6),
+		origin CHAR(3),
+		dest CHAR(3),
+		air_time SMALLINT UNSIGNED NULL,
+		distance SMALLINT UNSIGNED NOT NULL,
+		hour TINYINT NOT NULL,
+		minute TINYINT,
+		time_hour DATETIME
+	
+	)ENGINE=InnoDB;
+
+
+-- Table structure for table airlines
+
+DROP TABLE IF EXISTS airlines;
+CREATE TABLE airlines (
+		carrier CHAR (2),
+		name VARCHAR (30),
+		PRIMARY KEY (carrier)
+
+	)ENGINE=InnoDB;
+
+
+-- Table structure for table airports
+
+DROP TABLE IF EXISTS airports;
+CREATE TABLE airports (
+		faa CHAR (3),
+		name VARCHAR (51),
+		lat VARCHAR (20),
+		lon VARCHAR (20),
+		alt VARCHAR (4),
+		tz VARCHAR (5),
+		dst CHAR (1),
+		tzone VARCHAR (20),
+		PRIMARY KEY (faa)
+
+	)ENGINE=InnoDB;
+
+
+-- Table structure for table planes
+
+DROP TABLE IF EXISTS planes;
+CREATE TABLE planes (
+		tailnum CHAR (6),
+		year YEAR,
+		type VARCHAR (25),
+		manufacturer VARCHAR (30),
+		model VARCHAR (20),
+		engines VARCHAR (15),
+		seats SMALLINT UNSIGNED,
+		speed SMALLINT UNSIGNED,
+		engine VARCHAR (15),
+		PRIMARY KEY (tailnum)
+
+	)ENGINE=InnoDB;
+
+
+-- Table structure for table weather
+
+DROP TABLE IF EXISTS weather;
+CREATE TABLE weather (
+		origin CHAR (3),
+		year YEAR,
+		month CHAR (2),
+		day CHAR (2),
+		hour TINYINT NOT NULL,
+		temp DECIMAL (5,2),
+		dewp DECIMAL (4,2),
+		humid DECIMAL (5,2),
+		wind_dir SMALLINT NULL,
+		wind_speed SMALLINT NULL,
+		wind_gust SMALLINT NULL,
+		precip TINYINT,
+		pressure SMALLINT NULL,
+		visib VARCHAR (4),
+		time_hour DATETIME,
+		PRIMARY KEY (year, month, day, hour, origin)
+	
+	)ENGINE=InnoDB;
+
+
+
+
+-- Ajout des tables éclatées
+
+
+
+
+DROP TABLE IF EXISTS type_planes;
+CREATE TABLE type_planes (
+		type_id TINYINT UNSIGNED AUTO_INCREMENT,
+		type VARCHAR (25),
+		
+	)ENGINE=InnoDB
+
+
+DROP TABLE IF EXISTS manufacturer_planes;
+CREATE TABLE manufacturer_planes (
+		manufacturer_id TINYINT UNSIGNED AUTO_INCREMENT,
+		name VARCHAR (30)
+
+	)ENGINE=InnoDB
+
+
+DROP TABLE IF EXISTS model_planes;
+CREATE TABLE model_planes (
+		model_id TINYINT UNSIGNED AUTO_INCREMENT,
+		model VARCHAR (20),
+		engines VARCHAR (15),
+		seats SMALLINT UNSIGNED,
+		speed SMALLINT UNSIGNED,
+		engine VARCHAR (15)
+
+	)ENGINE=InnoDB
+
+-- Fin de fichier schema

@@ -1,0 +1,698 @@
+#3.2.4 Exercises
+
+	#1.Run ggplot(data = mpg). What do you see?
+#On voit un graphique vide.
+
+	#2.How many rows are in mpg? How many columns?
+> nrow(mpg)
+[1] 234
+> ncol(mpg)
+[1] 11
+
+	#3.What does the drv variable describe? Read the help for ?mpg to find out.
+
+#f = front-wheel drive, r = rear wheel drive, 4 = 4wd. describe which wheel are driving.
+
+	#4.Make a scatterplot of hwy vs cyl.
+
+table(mpg$hwy, mpg$cyl)
+
+ggplot(data = mpg) + geom_point(aes(x = hwy, y = cyl))
+ggplot(mpg, aes(x = hwy, y = cyl)) + geom_point()
+ggplot(mpg, aes(x = hwy, y = cyl)) + geom_jitter()
+
+	#5.What happens if you make a scatterplot of class vs drv? Why is the plot not useful?
+
+ggplot(mpg, aes(x = class, y = drv)) + geom_point()
+
+#Pas intéressant car il n'y a pas assez de valeure pour décrire quoi que ce soit.
+
+	#3.3.1 Exercises
+
+	#1.What’s gone wrong with this code? Why are the points not blue?
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+#Les parenthèses sont mal placées
+
+	#2.Which variables in mpg are categorical? Which variables are continuous? (Hint: type ?mpg to read the documentation for the dataset). How can you see this information when you run mpg?
+
+#categorical: manufacturer, model, trans, drv, class, fl
+#continuous: displ, cyl, cty, hwy, year
+#Si le type indiqué par mpg indique chr, c est categorical sinon c est continuous. 
+
+
+	#3.Map a continuous variable to color, size, and shape. How do these aesthetics behave differently for categorical vs. continuous variables?
+
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy, color = year))
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy, size = year))
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy, shape = year))
+#shape indique une erreur avec une variable continuous.
+
+	#4.What happens if you map the same variable to multiple aesthetics?
+
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy, size = year, color = cyl))
+#Pas très lisible
+
+	#5.What does the stroke aesthetic do? What shapes does it work with? (Hint: use ?geom_point)
+
+
+
+	#6.What happens if you map an aesthetic to something other than a variable name, like aes(colour = displ < 5)? Note, you’ll also need to specify x and y.
+
+
+
+ggplot(mpg, aes(x= displ, y= hwy, shape = class)) +
+    scale_shape_manual(values = c(1:7)) +
+    geom_point()
+
+#c(1:7) est utilisé parce qu'on a 7 données. Il faut augmenter en fonction du nombre de donnée.
+
+
+	#3.5.1 Exercises
+
+	#1.What happens if you facet on a continuous variable?
+
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy)) + 
+    facet_grid(. ~ cyl)
+
+
+	#2.What do the empty cells in plot with facet_grid(drv ~ cyl) mean? How do they relate to this plot?
+
+
+ggplot(data = mpg) + geom_point(mapping = aes(x = drv, y = cyl))
+ggplot(data = mpg) + 
+    geom_point(mapping = aes(x = displ, y = hwy)) + 
+    facet_grid(drv ~ cyl)
+
+
+	#3.What plots does the following code make? What does . do?
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ .)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(. ~ cyl)
+
+#the . makes allow a grid with only 1 variable.
+
+#Take the first faceted plot in this section:
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+
+
+	#4.What are the advantages to using faceting instead of the colour aesthetic? What are the disadvantages? How might the balance change if you had a larger dataset?
+
+#Le facet permet une différenciation et une meilleur visualisation en fonction du parametre spécifique. La couleur permet de faire un comparatif plus simple puisque les données sont sur un meme schéma. Plus la dataset s'élargi et moins la couleur sera visible et l'emploi du facet sera plus utile.	
+
+	#5.Read ?facet_wrap. What does nrow do? What does ncol do? What other options control the layout of the individual panels? Why doesn’t facet_grid() have nrow and ncol arguments?
+
+#The arguments nrow (ncol) determines the number of rows (columns) to use when laying out the facets. It is necessary since facet_wrap() only facets on one variable.
+
+#The nrow and ncol arguments are unnecessary for facet_grid() since the number of unique values of the variables specified in the function determines the number of rows and columns.
+
+	#6.When using facet_grid() you should usually put the variable with more unique levels in the columns. Why?
+
+
+#There will be more space for columns if the plot is laid out horizontally (landscape).
+
+
+	#3.6.1 Exercises
+
+	#1.What geom would you use to draw a line chart? A boxplot? A histogram? An area chart?
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+ geom_line()
+ggplot(mpg, aes(x = displ, y = hwy)) +
+ geom_boxplot()
+ggplot(mpg, aes(x = displ)) +
+ geom_histogram() #1 seule variable
+ggplot(mpg, aes(x = displ, y = hwy)) +
+ geom_area()
+
+	#2.Run this code in your head and predict what the output will look like. Then, run the code in R and check your predictions.
+
+	ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+  	geom_point() + 
+  	geom_smooth(se = FALSE)
+
+#Good predictions!  	
+
+
+	#3.What does show.legend = FALSE do? What happens if you remove it?
+	#Why do you think I used it earlier in the chapter?
+
+#It removes the legend on the graph. If we remove it, the legends appear.
+
+
+	#4.What does the se argument to geom_smooth() do?
+
+# A shadow around the curve. Ca montrer l'écart type.
+
+	
+	#5.Will these two graphs look different? Why/why not?
+
+	ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+ 	 geom_point() + 
+ 	 geom_smooth()
+
+	ggplot() + 
+  		geom_point(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  		geom_smooth(data = mpg, mapping = aes(x = displ, y = hwy))
+
+#No differences, we just change the place of the arguments. But it doesn t matter as long as the code is correct.
+
+
+	#6.Recreate the R code necessary to generate the following graphs.
+
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+     geom_point() +
+     geom_smooth(se = FALSE)
+
+ggplot(mpg, aes(x = displ, y = hwy, group = drv)) + 
+     geom_point() +
+     geom_smooth(se = FALSE)
+
+ ggplot(mpg, aes(x = displ, y = hwy, group = drv, color = drv)) + 
+     geom_point() +
+     geom_smooth(se = FALSE)
+
+ggplot(data = mpg) + 
+     geom_point(mapping = aes(x = displ, y = hwy, color = drv)) +
+     geom_smooth(data = mpg, mapping = aes(x = displ, y = hwy), se = FALSE)
+
+ggplot(data = mpg) + 
+     geom_point(mapping = aes(x = displ, y = hwy, color = drv)) +
+     geom_smooth(data = mpg, mapping = aes(x = displ, y = hwy, linetype = drv), se = FALSE)
+
+ggplot(data = mpg) + 
+     geom_point(mapping = aes(x = displ, y = hwy, color = drv))
+
+
+	#3.7.1 Exercises
+
+	#1.What is the default geom associated with stat_summary()? How could you rewrite the previous plot to use that geom function instead of the stat function?
+
+#geom_pointrange().
+ggplot(data = diamonds) +
+     geom_pointrange(
+         mapping = aes(x = cut, y = depth),
+     stat = "summary",
+     fun.ymin = min,
+     fun.ymax = max,
+     fun.y = median
+     )
+
+
+	#2.What does geom_col() do? How is it different to geom_bar()?
+
+# geom_bar() makes the height of the bar proportional to the number of cases in each group 
+# you want the heights of the bars to represent values in the data, use geom_col() instead.
+#geom_bar() uses stat_count() by default: it counts the number of cases at each x position. geom_col() uses stat_identity(): it leaves the data as is.
+
+	#3.Most geoms and stats come in pairs that are almost always used in concert. Read through the documentation and make a list of all the pairs. What do they have in common?
+
+
+
+	#4.What variables does stat_smooth() compute? What parameters control its behaviour?
+
+
+
+	#5.In our proportion bar chart, we need to set group = 1. Why? In other words what is the problem with these two graphs?
+
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = ..prop..))
+
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = color, y = ..prop..))
+
+#All the bars are identical
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))
+
+ggplot(data = diamonds) + 
+     geom_bar(mapping = aes(x = cut, fill = color, y = ..prop.., group = color))
+
+
+     #3.8.1 Exercises
+
+     #1.What is the problem with this plot? How could you improve it?
+
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_point()
+
+#We can use a jitter
+ ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + geom_jitter()
+
+
+	#2.What parameters to geom_jitter() control the amount of jittering?
+
+#Width and Height
+
+	#3.Compare and contrast geom_jitter() with geom_count().
+
+
+
+	#4.What’s the default position adjustment for geom_boxplot()? Create a visualisation of the mpg dataset that demonstrates it.
+
+
+
+	#3.9.1 Exercises
+
+	#1.Turn a stacked bar chart into a pie chart using coord_polar().
+
+ggplot(data = diamonds) + 
+     geom_bar(mapping = aes(x = cut, fill = clarity)) +
+      coord_polar()
+
+	#2.What does labs() do? Read the documentation.
+
+#Labs is for adding a title, subtitle, etc.
+
+	#3.What’s the difference between coord_quickmap() and coord_map()?
+
+#coord_map projects a portion of the earth, which is approximately spherical, onto a flat 2D plane using any projection defined by the mapproj package. Map projections do not, in general, preserve straight lines, so this requires considerable computation. coord_quickmap is a quick approximation that does preserve straight lines. It works best for smaller areas closer to the equator.
+
+	#4.What does the plot below tell you about the relationship between city and highway mpg? Why is coord_fixed() important? What does geom_abline() do?
+
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed()
+
+
+
+
+#These geoms add reference lines (sometimes called rules) to a plot, either horizontal, vertical, or diagonal (specified by slope and intercept). These are useful for annotating plots.
+
+
+
+
+
+
+
+	#Had an arrival delay of two or more hours
+
+dplyr::filter(flights, (arr_delay >= 120 | dep_delay >= 120))
+
+	#Flew to Houston (IAH or HOU)
+
+dplyr::filter(flights, dest == "IAH" | dest == "HOU") %>% select(dest == 'IAH' | dest == 'HOU')
+
+	#Were operated by United, American, or Delta
+
+dplyr::filter(flights, carrier == "UA" | carrier == "AA" | carrier == "DL")
+flights$carrier %>% table %>% length() 
+#Combien de compagnie dans flights
+
+	#Departed in summer (July, August, and September)
+
+dplyr::filter(flights, month >= 7 & month <= 9)
+dplyr::filter(flights, between(month,7,9))
+dplyr::filter(flights, month %in% c(7:9))
+flights %>% select(flight, month) %>% dplyr::filter(month %in% c(7:9)) 
+
+	#Arrived more than two hours late, but didn’t leave late
+
+dplyr::filter(flights, dep_delay <= 0 & arr_delay >= 120) 
+flights %>% select(flight, dep_delay) %>% dplyr::filter(dep_delay < 0
+
+	#Were delayed b at least an hour, but made up over 30 minutes in flight
+
+dplyr::filter(flights, dep_delay >= 60 & dep_delay-arr_delay >= 30)
+
+	#Departed between midnight and 6am (inclusive)
+
+dplyr::filter(flights, dep_time >= 1 & dep_time <= 600)
+
+	#Another useful dplyr filtering helper is between(). What does it do? Can you use it to simplify the code needed to answer the previous challenges?
+
+#Between is a shorter, faster way of testing two inequalities at once: it tests if its first argument is greater than or equal to its second, and less than or equal to its third.
+
+dplyr::filter(flights, between(month, 7, 9))
+dplyr::filter(flights, !between(dep_time, 601, 2359))
+flights %>% dplyr::filter(!between(dep_time, 601, 2359))
+
+	#How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
+
+summary(flights)
+dplyr::filter(flights, is.na(arr_delay))
+dplyr::filter(flights, is.na(arr_delay), is.na(arr_time))
+dplyr::filter(flights, is.na(dep_time))
+dplyr::filter(flights, is.na(dep_time)) %>% select(dep_time) %>% nrow()
+sum(is.na(flights$dep_time))
+
+	#8255 flights have a missing `dep_time`, 8255 have a missing `dep_delay`, 8713 have a missing `arr_time`, 9430 have a missing `arr_delay`, and 9430 have a missing `air_time`.
+	#We can speculate that these are flights that failed to depart or arrive, since a flight that departs normally but is then rerouted will probably have a normally recorded departure but no similar record for it s arrival. However, these could also just be lost data about perfectly normal flights.
+
+sum(is.na(flights[,4]))
+for (i in (1:10)) {print(i)}
+for (num_col in 1:ncol(flights)) 
+if (sum(is.na(flights[,num_col])) > 0) {
+	print(names(flights)[num_col])
+	print(sum(is.na(flights[,num_col])))
+}
+apply(flights, 2, sumisna)
+sumisna <- function(x) 
+sum(is.na(x))
+
+	#Why is NA ^ 0 not missing? Why is NA | TRUE not missing? Why is FALSE & NA not missing? Can you figure out the general rule? (NA * 0 is a tricky counterexample!)
+
+#`NA ^ 0` evaluates to 1 because anything to the power of 0 is 1, so although we didnt know the original value, we know it is being taken to the zeroth power.
+#With `NA | TRUE`, since the `|` operator returns `TRUE` if either of the terms are true, the whole expression returns true because the right half returns true. This is easier to see in an expression like `NA | 5<10` (since 5 is indeed less than 10).
+#We know that `&` returns TRUE when both terms are true. So, for example, `TRUE & TRUE` evaluates to `TRUE`. In `FALSE & NA`, one of the terms is false, so the expression evaluates to `FALSE`. As does something like `FALSE & TRUE`.
+
+	#How could you use arrange() to sort all missing values to the start? (Hint: use is.na())
+
+dplyr::arrange(flights, desc(col1))dplyr::arrange(flights, desc(is.na(dep_time)))
+df <- dplyr::arrange(flights, desc(is.na(dep_time)), desc(is.na(day)))
+
+	#Sort flights to find the most delayed flights. Find the flights that left earliest.
+
+df.most <- flights %>% mutate(tot_delay = dep_delay + arr_delay) %>% select(flight, dep_delay, arr_delay, tot_delay) %>% arrange(desc(tot_delay))
+dplyr::arrange(flights, desc(is.na(arr_time)))
+dplyr::arrange(flights, desc(dep_delay) < 0)
+df.earliest <- flights %>% dplyr::filter(dep_delay < 0) %>% arrange(dep_delay)
+by_cyl <- mtcars %>% group_by(cyl) %>% select(cyl, wt)
+by_cyl2 <- by_cyl %>% arrange(desc(wt))
+by_cyl3 <- by_cyl2 %>% arrange(desc(wt), .by_group = TRUE)
+
+	#Sort flights to find the fastest flights.
+
+dplyr::arrange(flights, air_time)
+
+	#Which flights travelled the longest? Which travelled the shortest?
+
+dplyr::arrange(flights, desc(distance))
+dplyr::arrange(flights, distance)
+filter(df, condition)
+arrange(df, col1, desc(col2))
+df %>% select(col1, col2) %>% filter() %>% arrange() %>% mutate()
+
+"{select = select
+from = df 
+where = filter 
+order by = arrange
+alter table = mutate}"
+
+	#Brainstorm as many ways as possible to select dep_time, dep_delay, arr_time, and arr_delay from flights.
+
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+
+	#What happens if you include the name of a variable multiple times in a select() call?
+
+#Nothing happens, you just get the variable once.
+
+	#What does the one_of() function do? Why might it be helpful in conjunction with this vector?
+
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+
+#It returns all the variables you ask for, for example ones stored in a vector.
+#It is helpful since you do not have to write again all the variables.Does the result of running the following code surprise you? How do the select helpers deal with case by default? How can you change that default?
+
+	#Currently dep_time and sched_dep_time are convenient to look at, but hard to compute with because they’re not really continuous numbers. Convert them to a more convenient representation of number of minutes since midnight.
+
+dplyr::mutate(flights, dep_time = (dep_time %/% 100) * 60 + (dep_time %% 100), sched_dep_time = (sched_dep_time %/% 100) * 60 + (sched_dep_time %% 100))
+
+
+	#Compare air_time with arr_time - dep_time. What do you expect to see? What do you see? What do you need to do to fix it?
+
+#We are expecting to see the same results.
+#But we observe some huge differences.
+#It seems that arr_time is in clock format and dep-time is in minutes_after_midnight format.
+#To fix it we can try to put arr_time in minutes_after_midnights format. 
+
+mutate(flights, dep_time = (dep_time %/% 100) * 60 + (dep_time %% 100), sched_dep_time = (sched_dep_time %/% 100) * 60 + (sched_dep_time %% 100), arr_time = (arr_time %/% 100) * 60 + (arr_time %% 100), sched_arr_time = (sched_arr_time %/% 100) * 60 + (sched_arr_time %% 100))
+
+	#Compare dep_time, sched_dep_time, and dep_delay. How would you expect those three numbers to be related?
+
+flights_deptime <-
+  mutate(flights,
+    dep_time_min = (dep_time %/% 100 * 60 + dep_time %% 100) %% 1440,
+    sched_dep_time_min = (sched_dep_time %/% 100 * 60 +
+      sched_dep_time %% 100) %% 1440,
+    dep_delay_diff = dep_delay - dep_time_min + sched_dep_time_min
+  )
+
+
+dep_delay = sched_dep_time - dep_time. If it dep_delay < 0 it means that the flights left early.
+
+	#Find the 10 most delayed flights using a ranking function. How do you want to handle ties? Carefully read the documentation for min_rank().
+
+dplyr::filter(flights, min_rank(desc(dep_delay)) <= 10)
+
+#Attention: ça ne les mets pas dans l ordre.
+
+	#What does 1:3 + 1:10 return? Why?
+#[1]  2  4  6  5  7  9  8 10 12 11 and a warning message.
+
+	#What trigonometric functions does R provide?
+?Trig
+
+	#5.6 Summarise
+
+mean(flights$dep_delay, na.rm = TRUE)
+summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+summarise(flights, mean_delay = mean(dep_delay, na.rm = TRUE), max_delay = max(dep_delay, na.rm = TRUE), min_delay = min(dep_delay, na.rm = TRUE))
+dplyr::summarise(flights, mean_delay = mean(dep_delay, na.rm = TRUE), max_delay = max(dep_delay, na.rm = TRUE), min_delay = min(dep_delay, na.rm = TRUE), count_NA = sum(is.na(dep_delay)))
+
+by_day <- group_by(flights, year, month, day)
+summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))
+
+# Pour calculer le nombre de vol par jour
+by_day %>% summarise(nbre_de_vol = n())
+
+
+	#Brainstorm at least 5 different ways to assess the typical delay characteristics of a group of flights. 
+
+
+
+
+	#Come up with another approach that will give you the same output as not_cancelled %>% count(dest) and not_cancelled %>% count(tailnum, wt = distance) (without using count()).
+
+not_cancelled <- flights %>% dplyr::filter(!is.na(dep_delay), !is.na(arr_delay))
+
+not_cancelled %>% group_by(dest) %>% tally()
+not_cancelled %>% group_by(tailnum) %>% summarise(n = sum(distance))
+
+	#Our definition of cancelled flights (is.na(dep_delay) | is.na(arr_delay) ) is slightly suboptimal. Why? Which is the most important column?
+
+#If a plane never leave then it can not arrive. We can just use "is.na(dep_delay)"
+#The most important column is dep_delay.
+flights %>% is.na(dep_delay)
+
+	#Look at the number of cancelled flights per day. Is there a pattern? Is the proportion of cancelled flights related to the average delay?
+
+flights %>% group_by(year, month, day) %>% summarise(cancelled = sum(is.na(dep_delay)))
+
+#There is no pattern.
+
+	#Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? Why/why not? (Hint: think about flights %>% group_by(carrier, dest) %>% summarise(n())
+
+flights %>% group_by(carrier) %>% summarise(avg_dep_delay = mean(arr_delay, na.rm = TRUE)) %>% arrange(desc(avg_dep_delay))
+
+#Since there are 16 carriers, 3 origin airport and 105 destination airport, it is difficult to really know if the delay is a matter a carriers or if the airport wanted the plane to wait for safety or whatever or is it because of the path to the destination etc.
+
+	#What does the sort argument to count() do. When might you use it?
+
+#The `sort` argument to `count()` sorts by descending order of `n`. This is useful because often the most common group is the most important.
+#Refer back to the lists of useful mutate and filtering functions. Describe how each operation changes when you combine it with grouping.
+
+	#Which plane (tailnum) has the worst on-time record?
+
+flights %>% group_by(tailnum) %>% dplyr::filter(all(is.na(arr_delay))) %>% tally(sort=TRUE)
+
+	#What time of day should you fly if you want to avoid delays as much as possible?
+
+flights %>% ggplot(aes(x=factor(hour), fill=arr_delay>5 | is.na(arr_delay))) + geom_bar()
+#The highest probability of delay is in the late evening.
+
+	#For each destination, compute the total minutes of delay. For each flight, compute the proportion of the total delay for its destination.
+
+flights %>% dplyr::filter(!is.na(arr_delay), arr_delay > 0) %>% group_by(dest) %>% mutate(arr_delay_total = sum(arr_delay), arr_delay_prop = arr_delay / arr_delay_total)
+
+
+	#Delays are typically temporally correlated: even once the problem that caused the initial delay has been resolved, later flights are delayed to allow earlier flights to leave. Using lag(), explore how the delay of a flight is related to the delay of the immediately preceding flight.
+
+
+
+#13.2.1 Exercises
+
+	#Imagine you wanted to draw (approximately) the route each plane flies from its origin to its destination. What variables would you need? What tables would you need to combine?
+
+#We would need the longitude, the latitude. The origin and the destination aswell.
+#The longitude and latitude are in the airports dataset and the origin and destination can be found in the flights dataset
+
+#Necessite le package: maps
+
+route <- flights %>% left_join(select(airports, origin = faa, origin_lat = lat, origin_lon = lon), by = "origin") %>% left_join(select(airports, dest = faa, dest_lat = lat, dest_lon = lon), by = "dest")
+
+route %>% slice(1:100) %>% ggplot(aes(x = origin_lon, xend = dest_lon, y = origin_lat, yend = dest_lat)) + borders("state") + geom_segment(arrow = arrow(length = unit(0.1, "cm"))) + coord_quickmap() + labs(y = "Latitude", y = "Longitude")
+
+#slice(x:y) = permet de choisir une portion de ligne de x à y
+
+#Comme on a fait des left_join, cela nous affiche combien de NA il y a dans la portion.
+
+
+	#I forgot to draw the relationship between weather and airports. What is the relationship and how should it appear in the diagram?
+
+relation <- airports %>% inner_join(select(weather, faa = origin, time_hour = time_hour, humidity = humid), by = "faa")
+
+#C est un inner_join donc on a pas de NA sur la fusion.
+
+#On peut relier airports et weather au travers de faa = origin.
+
+	
+	#weather only contains information for the origin (NYC) airports. If it contained weather records for all airports in the USA, what additional relation would it define with flights?
+
+#On pourrait avoir une relation avec le weather pour la destination. Ca permettrait de connaitre les conditions météo à l arrivée de l avion avec l heure d arrivée, le jour, le mois et l année.
+
+
+	#We know that some days of the year are “special”, and fewer people than usual fly on them. How might you represent that data as a data frame? What would be the primary keys of that table? How would it connect to the existing tables?
+
+#Christmas, New Year, Thanksgiving et Independance day sont des jours spéciaux aux USA.
+
+special_days <- tribble(
+~year, ~month, ~day, ~holidays,
+2013, 1, 1, 'New Year',
+2013, 7, 4, 'Independance',
+2013, 11, 29, 'Thanksgiving',
+2013, 12, 25, 'Christmas'
+)
+
+13.3.1 Exercises
+
+	1.Add a surrogate key to flights.
+
+ flight_id <- flights %>% arrange(year, month, day) %>% mutate(flight_id = row_number())
+
+ #Créer un df flight_id avec un surrogate key où chaque vol a un numero propre
+
+	2.Identify the keys in the following datasets
+
+df %>% count(colkey) %>%filter(n > 1)
+  #colkey est la colonne key supposée que l'on veut vérifier. Colkey peut etre une association de plusieurs colonne.
+
+	Lahman::Batting,
+	Lahman::Batting %>% count(playerID, yearID, stint) %>% filter(n>1) %>% nrow()
+
+	babynames::babynames
+	babynames::babynames %>% count(year, sex, name) %>% filter(nn>1) %>% nrow()
+
+	nasaweather::atmos
+	nasaweather::atmos %>% count(lat, long, year, month) %>% filter(n > 1) %>% nrow()
+
+	fueleconomy::vehicles
+	fueleconomy::vehicles %>% count(id) %>% filter(n > 1) %>% nrow()
+
+	ggplot2::diamonds
+	diamonds <- mutate(ggplot2::diamonds, "id" = row_number())
+	#Comme il n'y a pas de primary key, on peut créer une surrogate key.
+
+	(You might need to install some packages and read some documentation.)
+
+
+	3.Draw a diagram illustrating the connections between the Batting, Master, and Salaries tables in the Lahman package. Draw another diagram that shows the relationship between Master, Managers, AwardsManagers.
+
+Les primary key de chaque:
+	Lahman::Batting %>% count(playerID, yearID, stint) %>% filter(n>1) %>% nrow()
+	Lahman::Salaries %>% count(playerID, teamID, yearID) %>% filter(n > 1) %>% nrow()
+	Lahman::Master %>% count(playerID) %>% filter(n > 1) %>% nrow()
+#playerID est le lien entre chaque.
+
+Les primary key de chaque:
+	Lahman::Master %>% count(playerID) %>% filter(n > 1) %>% nrow()
+	Lahman::Managers %>% count(playerID, yearID, inseason) %>% filter(n>1) %>% nrow()
+	Lahman::AwardsManagers %>% count(playerID, yearID, awardID) %>% filter(n>1) %>% nrow()
+#playerId est encore une fois un lien.
+
+
+	4.How would you characterise the relationship between the Batting, Pitching, and Fielding tables?
+
+
+13.4.6 Exercises
+
+	1. Compute the average delay by destination, then join on the airports data frame so you can show the spatial distribution of delays. Here’s an easy way to draw a map of the United States:
+	airports %>%
+  semi_join(flights, c("faa" = "dest")) %>%
+  ggplot(aes(lon, lat)) +
+    borders("state") +
+    geom_point() +
+    coord_quickmap()
+
+avg_dest_delay <- flights %>% group_by(dest) %>% summarise(delay = mean(arr_delay, na.rm = TRUE)) %>% inner_join(airports, by = c(dest = "faa"))
+
+avg_dest_delay %>% 
++     ggplot(aes(lon, lat, color = delay)) +
++     borders("state")  +
++     geom_point() +
++     coord_quickmap()
+
+
+
+    2.Add the location of the origin and destination (i.e. the lat and lon) to flights.
+
+
+flightsordest <- flights %>% inner_join(select(airports, origin = faa, origin_lat = lat, origin_lon = lon), by = "origin") %>% inner_join(select(airports, dest = faa, dest_lat = lat, dest_lon = lon), by = "dest")
+
+
+	3.Is there a relationship between the age of a plane and its delays?
+
+relation_age_delay <- flights %>% inner_join(select(planes, tailnum = tailnum, age = year), by = "tailnum") %>% select(year:arr_delay, tailnum, age) %>% arrange(relation_age_delay, is.na(age), desc(age))
+
+
+	4.What weather conditions make it more likely to see a delay?
+
+weather_delay <- flights %>% inner_join(weather, by = c("year", "month", "day", "hour", "origin")) %>% select(year:dep_delay, dewp:visib)
+
+arrange(weather_delay, is.na(dep_delay), desc(dep_delay))
+
+
+	5.What happened on June 13-2013? Display the spatial pattern of delays, and then use Google to cross-reference with the weather.
+
+
+
+	13.5.1 Exercises
+
+	1.What does it mean for a flight to have a missing tailnum? What do the tail numbers that don’t have a matching record in planes have in common? (Hint: one variable explains ~90% of the problems.)
+
+flights %>% anti_join(planes, by = 'tailnum') %>% count(carrier, sort = TRUE)
+
+
+	2.Filter flights to only show flights with planes that have flown at least 100 flights.
+
+planes_gt100 <-
+  filter(flights) %>%
+  group_by(tailnum) %>%
+  count() %>%
+  filter(n > 100)
+
+ flights %>% semi_join(planes_gt100, by = 'tailnum')
+
+
+	#3.Combine fueleconomy::vehicles and fueleconomy::common to find only the records for the most common models.
+
+combination <- vehicles %>% inner_join(common, by = c('model', 'make'))
+combination %>% group_by(model) %>% count(model) %>% arrange(desc(nn)) 
+
+
+	4.Find the 48 hours (over the course of the whole year) that have the worst delays. Cross-reference it with the weather data. Can you see any patterns?
+
+worsttwodays <- flights %>% mutate(hour = sched_dep_time %/% 100) %>% group_by(origin, year, month, day, hour)
+ %>% 
+
+	5.What does anti_join(flights, airports, by = c("dest" = "faa")) tell you? What does anti_join(airports, flights, by = c("faa" = "dest")) tell you?
+
+	6.You might expect that there’s an implicit relationship between plane and airline, because each plane is flown by a single airline. Confirm or reject this hypothesis using the tools you’ve learned above.
